@@ -10,7 +10,7 @@ Name: Ayush Kumar
 Roll No: 2020290  
 Group No: 13
 
-**GitHub Repository:** [Will be added]
+**GitHub Repository:** https://github.com/kalkI-pratap17012002/SimpleMultiThreader-Using-Multithreading-with-Ease.git
 
 ---
 
