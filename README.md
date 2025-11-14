@@ -1,614 +1,318 @@
-# SimpleMultithreader: Easy Parallel Loop Execution with Pthreads
+# SimpleMultithreader - Operating Systems Assignment 5
 
-A header-only C++ library that simplifies parallel loop execution using POSIX Pthreads and C++11 lambda expressions.
+**Course:** CSE 231 Operating Systems (Section A)  
+**Assignment:** Assignment 5  
+**Due Date:** November 22, 2025  
+**Weightage:** 7%
 
----
+**Submitted By:**  
+Name: Ayush Kumar  
+Roll No: 2020290  
+Group No: 13
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [System Requirements](#system-requirements)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Compilation](#compilation)
-- [Usage](#usage)
-- [API Reference](#api-reference)
-- [Examples](#examples)
-- [Performance](#performance)
-- [Testing](#testing)
-- [Troubleshooting](#troubleshooting)
-- [Assignment Details](#assignment-details)
+**GitHub Repository:** [Will be added]
 
 ---
 
-## Overview
+## Introduction
 
-**SimpleMultithreader** is a lightweight, header-only library designed for CSE 231 Operating Systems (Assignment-5). It provides an easy-to-use interface for parallelizing loops using POSIX Pthreads, reducing the complexity typically associated with multithreaded programming.
+This project implements a header-only C++ library called SimpleMultithreader that simplifies parallel loop execution using POSIX threads. The library provides an easy-to-use interface for parallelizing both one-dimensional and two-dimensional loops through the parallel_for API, which accepts C++11 lambda expressions.
 
-Instead of manually creating threads, distributing work, and managing synchronization, you can simply call `parallel_for` with a lambda function, and the library handles all the threading details automatically.
-
-### Before SimpleMultithreader:
-```cpp
-// Manually manage threads, distribute work, synchronize...
-// ~60+ lines of pthread code
-```
-
-### After SimpleMultithreader:
-```cpp
-// Just one line!
-parallel_for(0, 1000, [&](int i) { array[i] = i * 2; }, 4);
-```
+The main goal is to abstract away the complexity of pthread programming so that users can parallelize their loops with minimal code changes. Instead of manually managing thread creation, work distribution, and synchronization, users can simply call parallel_for with their loop body as a lambda function.
 
 ---
 
-## Features
+## Project Structure
 
-✅ **Header-Only**: No compilation or linking required, just `#include "simple-multithreader.h"`
+The submission includes the following files:
 
-✅ **Easy-to-Use**: Parallelize loops with a single function call
-
-✅ **1D and 2D Support**: Handle both single and nested loops
-
-✅ **C++11 Lambda Support**: Use modern lambda expressions for loop bodies
-
-✅ **Automatic Work Distribution**: Evenly distributes iterations across threads
-
-✅ **Performance Timing**: Automatically prints execution time for each parallel loop
-
-✅ **Error Handling**: Built-in error checking for all pthread operations
-
-✅ **No Thread Pool**: Creates fresh threads for each call (educational design)
-
-✅ **POSIX Pthreads**: Uses standard POSIX threads (portable across Linux/Unix)
+- **simple-multithreader.h** - Main header file containing the complete implementation
+- **vector.cpp** - Example program demonstrating 1D parallel_for (vector addition)
+- **matrix.cpp** - Example program demonstrating both 1D and 2D parallel_for (matrix multiplication)
+- **Makefile** - Build configuration for compiling the example programs
+- **README.md** - This file
+- **DEMO.md** - Detailed sample inputs and expected outputs
+- **REQUIREMENTS.md** - Mapping of assignment requirements to implementation
 
 ---
 
 ## System Requirements
 
 ### Hardware
-- Linux or Unix-based operating system (Ubuntu, Fedora, WSL, etc.)
-- **Note**: macOS is NOT recommended for OS assignments
-- Multi-core processor (recommended for observing parallel speedup)
+- Linux or Unix-based system (Ubuntu, Fedora, or WSL on Windows)
+- MacOS is not recommended as per assignment guidelines
+- Multi-core processor recommended for observing parallel speedup
 
 ### Software
-- **C++ Compiler**: g++ with C++11 support (g++ 4.8.1 or later)
-- **Build Tool**: GNU Make
-- **Pthread Library**: POSIX threads (usually included in standard Linux distributions)
-
-### Verification
-```bash
-# Check g++ version (should be 4.8.1+)
-g++ --version
-
-# Check for pthread support
-ls /usr/lib/x86_64-linux-gnu/libpthread.so
-# or
-ls /usr/lib/libpthread.so
-
-# Check for GNU Make
-make --version
-```
+- C++ compiler with C++11 support (g++ 4.8.1 or later)
+- GNU Make
+- POSIX threads library (pthread)
 
 ---
 
-## Project Structure
+## Building the Project
 
-```
-SimpleMultithreader/
-├── simple-multithreader.h    # Main header file (implementation)
-├── vector.cpp                # Example: 1D vector addition
-├── matrix.cpp                # Example: 2D matrix multiplication
-├── Makefile                  # Build configuration
-├── README.md                 # This file
-├── REQUIREMENTS.md           # Requirement-to-implementation mapping
-└── DEMO.md                   # Sample inputs and outputs
-```
+To compile the example programs:
 
-### File Descriptions
-
-- **`simple-multithreader.h`**: The core library implementation
-  - Thread data structures (ThreadWork1D, ThreadWork2D)
-  - Worker functions (worker_1d, worker_2d)
-  - parallel_for APIs (1D and 2D versions)
-  - ~590 lines with extensive documentation
-
-- **`vector.cpp`**: Demonstrates 1D parallel_for
-  - Vector addition: C[i] = A[i] + B[i]
-  - Default: 48 million elements
-  - Configurable thread count and array size
-
-- **`matrix.cpp`**: Demonstrates both 1D and 2D parallel_for
-  - Matrix initialization (1D parallel_for)
-  - Matrix multiplication (2D parallel_for)
-  - Matrix cleanup (1D parallel_for)
-  - Default: 1024×1024 matrices
-
-- **`Makefile`**: Build automation
-  - Compiles both examples
-  - Flags: `-O3 -std=c++11 -lpthread`
-  - Targets: `all`, `clean`, individual programs
-
----
-
-## Installation
-
-### Option 1: Direct Download
-1. Clone or download the project files
-2. Ensure all files are in the same directory
-3. No installation needed (header-only library)
-
-### Option 2: Quick Start
 ```bash
-# Navigate to project directory
-cd /path/to/SimpleMultithreader
-
-# Verify files are present
-ls simple-multithreader.h vector.cpp matrix.cpp Makefile
-
-# Compile
 make all
-
-# Run tests
-./vector 4
-./matrix 4
 ```
 
----
+To compile individual programs:
 
-## Compilation
-
-### Using Make (Recommended)
 ```bash
-# Clean previous builds
-make clean
-
-# Compile all programs
-make all
-
-# Compile specific program
 make vector
 make matrix
 ```
 
-### Manual Compilation
+To clean build artifacts:
+
 ```bash
-# Compile vector program
+make clean
+```
+
+Manual compilation (if needed):
+
+```bash
 g++ -O3 -std=c++11 -o vector vector.cpp -lpthread
-
-# Compile matrix program
 g++ -O3 -std=c++11 -o matrix matrix.cpp -lpthread
-```
-
-### Compilation Flags Explained
-- `-O3`: Maximum optimization level (for performance)
-- `-std=c++11`: Enable C++11 features (required for lambda support)
-- `-lpthread`: Link with POSIX threads library
-- `-o <name>`: Output executable name
-
-### Common Compilation Issues
-
-**Issue: "pthread.h: No such file or directory"**
-```bash
-# Solution: Install pthread development package
-sudo apt-get install libc6-dev  # Ubuntu/Debian
-sudo yum install glibc-devel    # Fedora/RHEL
-```
-
-**Issue: "error: 'function' is not a member of 'std'"**
-```bash
-# Solution: Ensure -std=c++11 flag is used
-g++ -std=c++11 vector.cpp -lpthread
 ```
 
 ---
 
 ## Usage
 
-### Basic Usage Pattern
+### Basic Usage
 
-1. **Include the header**:
-   ```cpp
-   #include "simple-multithreader.h"
-   ```
+Include the header file in your program:
 
-2. **Call parallel_for** with your lambda:
-   ```cpp
-   parallel_for(start, end, [&](int i) {
-       // Your loop body here
-   }, numThreads);
-   ```
-
-3. **Compile with pthread**:
-   ```bash
-   g++ -std=c++11 your_program.cpp -lpthread
-   ```
-
-### Complete Example
 ```cpp
 #include "simple-multithreader.h"
-#include <iostream>
+```
 
-int main() {
-    const int SIZE = 1000;
-    int* data = new int[SIZE];
-    
-    // Initialize array in parallel
-    parallel_for(0, SIZE, [=](int i) {
-        data[i] = i * i;  // Calculate squares
-    }, 4);  // Use 4 threads
-    
-    // Verify first few elements
-    for (int i = 0; i < 5; i++) {
-        std::cout << "data[" << i << "] = " << data[i] << "\n";
-    }
-    
-    delete[] data;
-    return 0;
-}
+Call parallel_for with your loop:
+
+```cpp
+parallel_for(0, 1000, [&](int i) {
+    array[i] = i * i;
+}, 4);
+```
+
+Compile with pthread support:
+
+```bash
+g++ -std=c++11 your_program.cpp -lpthread
+```
+
+### Running the Examples
+
+Vector addition example (1D parallel_for):
+
+```bash
+./vector [numThreads] [arraySize]
+```
+
+Default values: 2 threads, 48 million elements
+
+```bash
+./vector
+./vector 4 10000000
+```
+
+Matrix multiplication example (2D parallel_for):
+
+```bash
+./matrix [numThreads] [matrixSize]
+```
+
+Default values: 2 threads, 1024x1024 matrix
+
+```bash
+./matrix
+./matrix 4 512
 ```
 
 ---
 
 ## API Reference
 
-### Function: `parallel_for` (1D version)
+### parallel_for (1D version)
 
-**Signature:**
 ```cpp
-void parallel_for(int low, int high, 
-                  std::function<void(int)> &&lambda, 
-                  int numThreads);
+void parallel_for(int low, int high, std::function<void(int)> &&lambda, int numThreads);
 ```
 
-**Parameters:**
-- `low` (int): Starting index (inclusive)
-- `high` (int): Ending index (exclusive) - loop runs for [low, high)
-- `lambda` (std::function<void(int)>): Function to execute for each index
-  - Takes one parameter: the current loop index `i`
-  - Can capture variables: `[&]` (by reference) or `[=]` (by value)
-- `numThreads` (int): Total number of threads INCLUDING main thread
-  - Example: `numThreads=4` means 1 main + 3 workers = 4 total
+Parameters:
+- low: Starting index (inclusive)
+- high: Ending index (exclusive)
+- lambda: Function to execute for each index
+- numThreads: Total number of threads including main thread
 
-**Behavior:**
-- Executes `lambda(i)` for each `i` in range [low, high)
-- Distributes work evenly across `numThreads` threads
-- Main thread participates in execution
-- Prints execution time in milliseconds
-- Blocks until all iterations complete
+Example:
 
-**Example:**
 ```cpp
-// Sequential equivalent: for(int i = 0; i < 1000; i++) array[i] = 0;
-parallel_for(0, 1000, [&](int i) {
-    array[i] = 0;
-}, 8);  // Use 8 threads
+parallel_for(0, size, [&](int i) {
+    C[i] = A[i] + B[i];
+}, 4);
+```
+
+### parallel_for (2D version)
+
+```cpp
+void parallel_for(int low1, int high1, int low2, int high2, 
+                  std::function<void(int, int)> &&lambda, int numThreads);
+```
+
+Parameters:
+- low1, high1: Outer loop bounds
+- low2, high2: Inner loop bounds
+- lambda: Function to execute for each (i,j) pair
+- numThreads: Total number of threads including main thread
+
+Example:
+
+```cpp
+parallel_for(0, rows, 0, cols, [&](int i, int j) {
+    C[i][j] = A[i][j] + B[i][j];
+}, 4);
 ```
 
 ---
 
-### Function: `parallel_for` (2D version)
+## Implementation Details
 
-**Signature:**
-```cpp
-void parallel_for(int low1, int high1, int low2, int high2,
-                  std::function<void(int, int)> &&lambda, 
-                  int numThreads);
-```
+### Thread Creation Strategy
 
-**Parameters:**
-- `low1, high1` (int): Outer loop bounds (i dimension)
-- `low2, high2` (int): Inner loop bounds (j dimension)
-- `lambda` (std::function<void(int, int)>): Function taking (i, j) parameters
-- `numThreads` (int): Total number of threads INCLUDING main thread
+The library creates exactly numThreads threads including the main thread. For example, if numThreads is 4, then 3 worker threads are created using pthread_create, and the main thread also participates in executing the loop iterations. This ensures we have exactly 4 threads doing work.
 
-**Behavior:**
-- Executes `lambda(i, j)` for all (i, j) pairs
-- i ranges from [low1, high1), j ranges from [low2, high2)
-- Flattens 2D iteration space for even work distribution
-- Prints execution time in milliseconds
+### Work Distribution
 
-**Example:**
-```cpp
-// Sequential equivalent:
-// for(int i = 0; i < 100; i++)
-//     for(int j = 0; j < 100; j++)
-//         matrix[i][j] = i + j;
+Work is distributed evenly across all threads using a simple chunking approach. The total number of iterations is divided by the number of threads, and each thread gets a consecutive chunk of iterations. The last thread may get slightly fewer iterations if the total is not evenly divisible.
 
-parallel_for(0, 100, 0, 100, [&](int i, int j) {
-    matrix[i][j] = i + j;
-}, 4);  // Use 4 threads
-```
+For 2D loops, the two-dimensional iteration space is flattened into a one-dimensional space before distribution. Each thread then converts its linear index range back to (i,j) coordinates during execution.
 
----
+### Error Handling
 
-## Examples
+The implementation checks return codes from pthread_create and pthread_join. If thread creation fails, the work that would have been assigned to that thread is executed by the main thread as a fallback. This ensures correctness even when system resources are limited.
 
-### Example 1: Vector Addition (1D)
+### Timing
 
-```cpp
-#include "simple-multithreader.h"
-#include <assert.h>
-
-int main(int argc, char** argv) {
-    int numThread = argc>1 ? atoi(argv[1]) : 2;
-    int size = argc>2 ? atoi(argv[2]) : 48000000;  
-    
-    // Allocate vectors
-    int* A = new int[size];
-    int* B = new int[size];
-    int* C = new int[size];
-    
-    // Initialize
-    std::fill(A, A+size, 1);
-    std::fill(B, B+size, 1);
-    std::fill(C, C+size, 0);
-    
-    // Parallel addition
-    parallel_for(0, size, [&](int i) {
-        C[i] = A[i] + B[i];
-    }, numThread);
-    
-    // Verify
-    for(int i=0; i<size; i++) assert(C[i] == 2);
-    printf("Test Success\n");
-    
-    delete[] A; delete[] B; delete[] C;
-    return 0;
-}
-```
-
-**Run:**
-```bash
-./vector 4 10000000  # 4 threads, 10M elements
-```
-
----
-
-### Example 2: Matrix Multiplication (2D)
-
-```cpp
-#include "simple-multithreader.h"
-#include <assert.h>
-
-int main(int argc, char** argv) {
-    int numThread = argc>1 ? atoi(argv[1]) : 2;
-    int size = argc>2 ? atoi(argv[2]) : 1024;
-    
-    // Allocate matrices
-    int** A = new int*[size];
-    int** B = new int*[size];
-    int** C = new int*[size];
-    
-    // Initialize in parallel (1D parallel_for)
-    parallel_for(0, size, [=](int i) {
-        A[i] = new int[size];
-        B[i] = new int[size];
-        C[i] = new int[size];
-        std::fill(A[i], A[i]+size, 1);
-        std::fill(B[i], B[i]+size, 1);
-        std::fill(C[i], C[i]+size, 0);
-    }, numThread);
-    
-    // Matrix multiplication (2D parallel_for)
-    parallel_for(0, size, 0, size, [&](int i, int j) {
-        for(int k=0; k<size; k++) {
-            C[i][j] += A[i][k] * B[k][j];
-        }
-    }, numThread);
-    
-    // Verify
-    for(int i=0; i<size; i++)
-        for(int j=0; j<size; j++)
-            assert(C[i][j] == size);
-    printf("Test Success\n");
-    
-    // Cleanup
-    parallel_for(0, size, [=](int i) {
-        delete [] A[i]; delete [] B[i]; delete [] C[i];
-    }, numThread);
-    delete[] A; delete[] B; delete[] C;
-    
-    return 0;
-}
-```
-
-**Run:**
-```bash
-./matrix 4 512  # 4 threads, 512×512 matrix
-```
-
----
-
-## Performance
-
-### Expected Speedup
-
-The library provides near-linear speedup for compute-intensive tasks:
-
-| Threads | Expected Speedup | Best For |
-|---------|------------------|----------|
-| 1 | 1.0x (baseline) | Sequential |
-| 2 | ~1.8x - 2.0x | Dual-core |
-| 4 | ~3.5x - 4.0x | Quad-core |
-| 8 | ~6.5x - 8.0x | 8-core |
-
-**Note**: Actual speedup depends on:
-- Problem size (larger = better parallelization)
-- Workload per iteration (more computation = better speedup)
-- Memory bandwidth (can become bottleneck)
-- System load and hardware
-
-### Performance Tips
-
-1. **Use enough work per thread**: Each thread should have substantial work
-   - Good: 1000+ iterations per thread
-   - Bad: < 100 iterations per thread (overhead dominates)
-
-2. **Problem size matters**: Larger problems scale better
-   - Vector: Use size ≥ 1M for meaningful parallelization
-   - Matrix: Use size ≥ 256×256 for good speedup
-
-3. **Match threads to cores**: Use `numThreads ≈ number of CPU cores`
-   ```bash
-   # Check CPU cores
-   lscpu | grep "^CPU(s):"
-   ```
-
-4. **Minimize memory contention**: Avoid false sharing
-   - Good: Each thread writes to separate array regions (vector.cpp)
-   - Bad: All threads writing to same cache line
+Each call to parallel_for automatically measures and prints its execution time in milliseconds using the C++11 chrono library. This helps users track the performance benefit of parallelization.
 
 ---
 
 ## Testing
 
-### Run Provided Tests
+Both example programs include assertions to verify correctness:
+
+- vector.cpp checks that all elements of the result array equal 2 (since 1+1=2)
+- matrix.cpp checks that all elements of the result matrix equal the matrix size
+
+If you see "Test Success" in the output, the parallel computation produced correct results.
+
+Sample test commands:
 
 ```bash
-# Compile
-make all
-
-# Test vector with default settings (2 threads, 48M elements)
-./vector
-
-# Test vector with 4 threads and 10M elements
 ./vector 4 10000000
-
-# Test matrix with default settings (2 threads, 1024×1024)
-./matrix
-
-# Test matrix with 8 threads and 512×512
-./matrix 8 512
+./matrix 4 512
 ```
-
-### Expected Output
-
-**Vector Test:**
-```
-====== Welcome to Assignment-5 of the CSE231(A) ======
-[parallel_for 1D] Execution time (4 threads): 11 ms
-Test Success
-====== Hope you enjoyed CSE231(A) ======
-```
-
-**Matrix Test:**
-```
-====== Welcome to Assignment-5 of the CSE231(A) ======
-[parallel_for 1D] Execution time (2 threads): 42 ms
-[parallel_for 2D] Execution time (2 threads): 126 ms
-Test Success. 
-[parallel_for 1D] Execution time (2 threads): 1 ms
-====== Hope you enjoyed CSE231(A) ======
-```
-
-### Verify Correctness
-
-Both programs include assertions to verify correctness:
-- **vector.cpp**: Checks that all `C[i] == 2` (since 1+1=2)
-- **matrix.cpp**: Checks that all `C[i][j] == size` (matrix multiplication property)
-
-If you see "Test Success", the parallel computation produced correct results! ✅
 
 ---
 
-## Troubleshooting
+## Performance Observations
 
-### Compilation Errors
+Performance depends on several factors including problem size, number of CPU cores, and memory bandwidth. Generally:
 
-**Error: `pthread_create` undefined reference**
-```bash
-# Solution: Add -lpthread flag
-g++ -std=c++11 vector.cpp -lpthread
-```
+- Vector addition shows good speedup for large arrays (10 million+ elements)
+- Matrix multiplication shows excellent speedup due to high computation per element
+- Using more threads than CPU cores may not improve performance
+- Very small problems may run slower in parallel due to thread creation overhead
 
-**Error: `lambda expression` syntax error**
-```bash
-# Solution: Add -std=c++11 flag
-g++ -std=c++11 vector.cpp -lpthread
-```
-
-### Runtime Errors
-
-**Error: Thread creation failed**
-- **Cause**: System limit on number of threads
-- **Solution**: Reduce `numThreads` or increase system limit
-  ```bash
-  ulimit -u  # Check current limit
-  ulimit -u 4096  # Increase limit
-  ```
-
-**Error: Segmentation fault**
-- **Cause**: Array out of bounds or invalid memory access
-- **Solution**: Check array sizes and loop bounds
-
-### Performance Issues
-
-**No speedup observed:**
-1. Problem size too small → Increase size
-2. Too many threads → Reduce to number of cores
-3. Memory-bound workload → Can't parallelize memory bandwidth
-
-**Slower with more threads:**
-- Thread creation overhead exceeds benefit
-- Use larger problem sizes
-- Ensure threads have enough work
+Recommended thread counts:
+- 2-4 threads for dual-core or quad-core systems
+- 8 threads for 8-core systems
+- Generally match the number of physical CPU cores
 
 ---
 
-## Assignment Details
+## Known Limitations
 
-**Course**: CSE 231 Operating Systems (Section-A)  
-**Assignment**: Assignment-5  
-**Title**: SimpleMultithreader: Using Multithreading with Ease  
-**Due Date**: November 22, 2025 (11:59 PM)  
-**Weight**: 7% of course grade  
-**Instructor**: Vivek Kumar
-
-### Learning Objectives
-1. Understand POSIX pthread programming
-2. Learn work distribution in parallel programs
-3. Practice C++11 lambda expressions
-4. Implement header-only libraries
-5. Handle thread synchronization and cleanup
-
-### Submission Requirements
-- Source files (simple-multithreader.h, vector.cpp, matrix.cpp, Makefile)
-- Design document detailing implementation
-- REQUIREMENTS.md (requirement mapping)
-- README.md (this file)
-- DEMO.md (sample outputs)
+- Thread creation overhead makes parallelization inefficient for very small problems
+- No automatic tuning of thread count based on problem size
+- Memory-bound workloads may not see significant speedup
+- No support for nested parallelism (calling parallel_for from within a parallel_for)
 
 ---
 
-## Additional Resources
+## Assignment Requirements Met
 
-### C++11 Lambda Expressions
-- [RIP Tutorial: What is a Lambda Expression](https://riptutorial.com/cplusplus/example/1854/what-is-a-lambda-expression-)
-- [Embarcadero: Lambda Expressions for Beginners](https://blogs.embarcadero.com/lambda-expressions-for-beginners/)
+This implementation satisfies all requirements specified in the assignment document:
 
-### POSIX Threads
-- `man pthread_create`
-- `man pthread_join`
-- [POSIX Threads Programming (LLNL)](https://hpc-tutorials.llnl.gov/posix/)
-
-### Parallel Programming
-- [Introduction to Parallel Computing](https://hpc.llnl.gov/documentation/tutorials/introduction-parallel-computing-tutorial)
-
----
-
-## License
-
-This project is created for educational purposes as part of CSE 231 Operating Systems course.
+1. Provides both 1D and 2D parallel_for interfaces with correct signatures
+2. Does not use any thread pool concept - creates fresh threads for each call
+3. Runtime has exactly numThreads threads including main thread
+4. Threads are created and destroyed within each parallel_for call
+5. Code is modular with separate worker functions for 1D and 2D cases
+6. Works with provided example programs without modification
+7. Prints execution time for each parallel_for call
+8. Includes proper error checking for pthread operations
+9. Code is documented with explanatory comments
+10. Header-only implementation as required
+11. Uses C++11 lambda expressions
+12. Only uses POSIX pthread APIs, no C++11 threading
 
 ---
 
-## Contact & Support
+## Group Contribution
 
-For assignment-related questions:
-- Contact teaching staff via course forum
-- Office hours: Check course schedule
-- Email: Refer to course syllabus
+**Ayush Kumar (2020290):**
+- Designed and implemented the core parallel_for functions
+- Implemented work distribution algorithm for both 1D and 2D cases
+- Added error handling and fallback execution logic
+- Wrote the worker thread functions
+- Created timing measurement code
+- Prepared documentation files
+- Tested with provided example programs
 
 ---
 
-**Happy Parallel Programming! 🚀**
+## References
+
+The following resources were consulted during development:
+
+- POSIX Threads Programming guide
+- C++11 lambda expression tutorials from course materials
+- pthread man pages (pthread_create, pthread_join)
+- Assignment 5 specification document
+- Lecture 21 notes on parallel programming
+
+---
+
+## Compilation Flags Used
+
+The Makefile uses the following flags:
+
+- **-O3** - Maximum optimization for performance
+- **-std=c++11** - Enable C++11 features required for lambda expressions
+- **-lpthread** - Link with POSIX threads library
+
+---
+
+## Contact Information
+
+For questions or issues related to this submission:
+
+Name: Ayush Kumar  
+Roll No: 2020290  
+Group No: 13  
+Course: CSE 231 Operating Systems (Section A)
+
+---
+
+## Acknowledgments
+
+Thanks to Professor Vivek Kumar for the assignment specification and the teaching staff for their support during implementation.
+
+---
+
+**End of README**
