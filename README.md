@@ -191,4 +191,4 @@ pthread_create fails for thread k
 
 ## Repository
 
-[github.com/kalkI-pratap17012002/SimpleMultiThreader-Using-Multithreading-with-Ease](https://github.com/kalkI-pratap17012002/SimpleMultiThreader-Using-Multithreading-with-Ease.git)
+[https://github.com/kalkI-pratap17012002/SimpleMultiThreader](https://github.com/kalkI-pratap17012002/SimpleMultiThreader.git)
